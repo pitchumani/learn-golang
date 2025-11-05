@@ -1,0 +1,27 @@
+package main
+
+import "fmt"
+
+func Janis(ch chan string) {
+	msg := <- ch
+
+	fmt.Println("Jimi said:", msg)
+
+	ch <- "Hello, Jimi!"
+}
+
+func main() {
+	phone := make(chan string)
+	defer close(phone)
+
+	// if Janis is not executed goroutine then the process will be
+	// in deadlock as Janis is blocking until receiving a message
+	// and main could not send message because Janis is blocked 
+	go Janis(phone)
+
+	phone <- "Hello, Janis!"
+
+	msg := <- phone
+
+	fmt.Println("Janis said:", msg)
+}
